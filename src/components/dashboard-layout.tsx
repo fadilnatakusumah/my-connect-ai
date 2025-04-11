@@ -13,13 +13,21 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { theme, setTheme } = useTheme();
 
+  function isActive(path: string) {
+    if (path === "/") return pathname === path;
+    return pathname.startsWith(path) || pathname === path;
+  }
+
   const navigation = [
     { name: "Dashboard", href: "/", icon: LayoutDashboard },
     { name: "Posts", href: "/posts", icon: FileText },
   ];
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div
+      className="flex h-screen overflow-auto"
+      style={{ scrollbarWidth: "thin" }}
+    >
       {/* Sidebar for mobile */}
       <div
         className={`fixed inset-0 z-40 flex md:hidden ${
@@ -49,7 +57,7 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
                   key={item.name}
                   href={item.href}
                   className={`group flex items-center px-2 py-2 text-base font-medium rounded-md ${
-                    pathname === item.href
+                    isActive(item.href)
                       ? "bg-primary text-primary-foreground"
                       : "text-foreground hover:bg-muted"
                   }`}
@@ -58,6 +66,7 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
                     className="mr-4 h-6 w-6 flex-shrink-0"
                     aria-hidden="true"
                   />
+
                   {item.name}
                 </Link>
               ))}
@@ -91,7 +100,7 @@ export function DashboardLayout({ children }: { children: ReactNode }) {
                   key={item.name}
                   href={item.href}
                   className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
-                    pathname === item.href
+                    isActive(item.href)
                       ? "bg-primary text-primary-foreground"
                       : "text-foreground hover:bg-muted"
                   }`}
