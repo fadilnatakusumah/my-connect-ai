@@ -1,6 +1,6 @@
 "use client";
 
-import { Search } from "lucide-react";
+import { Edit, Search, Trash } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -69,8 +69,30 @@ function ListPosts({ posts }: { posts: Post[] }) {
               filteredPosts.map((post) => (
                 <TableRow key={post.id}>
                   <TableCell className="font-medium">{post.id}</TableCell>
-                  <TableCell>{post.title}</TableCell>
-                  <TableCell>{post.body}</TableCell>
+                  <TableCell className="max-w-52 text-ellipsis overflow-hidden">
+                    {post.title}
+                  </TableCell>
+                  <TableCell className="whitespace-break-spaces">
+                    {post.body}
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      className="cursor-pointer text-red-700"
+                      onClick={() => {}}
+                      variant="ghost"
+                      size={"icon"}
+                    >
+                      <Trash />
+                    </Button>
+                    <Button
+                      className="cursor-pointer"
+                      onClick={() => {}}
+                      variant="ghost"
+                      size={"icon"}
+                    >
+                      <Edit />
+                    </Button>
+                  </TableCell>
                 </TableRow>
               ))
             ) : (
