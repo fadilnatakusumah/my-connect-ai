@@ -16,6 +16,18 @@ export async function SubmitPost(data: Post) {
   }).then((response) => response.json());
 }
 
+export async function UpdatePost(data: Post) {
+  return fetch(`https://jsonplaceholder.typicode.com/posts/${data.id}`, {
+    method: "PUT",
+    body: JSON.stringify({
+      data,
+    }),
+    headers: {
+      "Content-type": "application/json; charset=UTF-8",
+    },
+  }).then((response) => response.json());
+}
+
 export async function DeletePost(id: string) {
   return fetch(`https://jsonplaceholder.typicode.com/posts/${id}`, {
     method: "DELETE",

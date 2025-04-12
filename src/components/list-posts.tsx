@@ -113,7 +113,9 @@ function ListPosts({ posts: initialPosts }: { posts: Post[] }) {
                       variant="ghost"
                       size={"icon"}
                     >
-                      <Edit />
+                      <Link href={`/posts/edit-a-post/${post.id}`}>
+                        <Edit />
+                      </Link>
                     </Button>
                   </TableCell>
                 </TableRow>

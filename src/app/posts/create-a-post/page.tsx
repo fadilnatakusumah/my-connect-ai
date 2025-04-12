@@ -1,10 +1,10 @@
 import ContentWrapper from "~/components/content-wrapper";
-import CreatePost from "~/components/create-post";
+import CreateUpdatePost from "~/components/create-update-post";
 
 async function CreatePostPage() {
   return (
     <ContentWrapper title="Create a Post">
-      <CreatePost />
+      <CreateUpdatePost />
     </ContentWrapper>
   );
 }

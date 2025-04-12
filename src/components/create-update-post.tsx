@@ -19,7 +19,8 @@ import { Input } from "~/components/ui/input";
 import { Textarea } from "./ui/textarea";
 
 import { useRouter } from "next/navigation";
-import { SubmitPost } from "~/services/api-posts";
+import { Post, SubmitPost, UpdatePost } from "~/services/api-posts";
+import { useEffect } from "react";
 
 const FormSchema = z.object({
   title: z.string().min(2, {
@@ -31,7 +32,7 @@ const FormSchema = z.object({
   userId: z.any().nullable(),
 });
 
-export default function CreatePost() {
+export default function CreateUpdatePost({ post }: { post?: Post }) {
   const router = useRouter();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -44,7 +45,8 @@ export default function CreatePost() {
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     try {
-      await SubmitPost(data);
+      const apiFunc = post?.id ? UpdatePost : SubmitPost;
+      await apiFunc({ ...data, id: post?.id });
       toast.success("Success submitting post", {
         classNames: {
           icon: "text-green-500",
@@ -60,6 +62,14 @@ export default function CreatePost() {
       toast.error(String(error));
     }
   }
+
+  useEffect(() => {
+    console.log(post);
+    if (post?.body || post?.title) {
+      form.setValue("title", post.title);
+      form.setValue("body", post.body);
+    }
+  }, [post, form]);
 
   return (
     <Form {...form}>
