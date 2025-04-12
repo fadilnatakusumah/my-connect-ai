@@ -14,13 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
-
-interface Post {
-  id: string;
-  title: string;
-  userId: string;
-  body: string;
-}
+import { type Post } from "~/services/api-posts";
 
 function ListPosts({ posts }: { posts: Post[] }) {
   const [searchTerm, setSearchTerm] = useState("");
@@ -50,10 +44,6 @@ function ListPosts({ posts }: { posts: Post[] }) {
           <Link href="/posts/create-a-post">Create a Post</Link>
         </Button>
       </div>
-
-      {/* <div>
-        <pre>{JSON.stringify({ users }, null, 2)}</pre>
-      </div> */}
 
       <div className="rounded-md border overflow-y-auto">
         <Table style={{ scrollbarWidth: "thin" }}>

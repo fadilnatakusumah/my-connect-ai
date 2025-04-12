@@ -18,6 +18,9 @@ import {
 import { Input } from "~/components/ui/input";
 import { Textarea } from "./ui/textarea";
 
+import { useRouter } from "next/navigation";
+import { SubmitPost } from "~/services/api-posts";
+
 const FormSchema = z.object({
   title: z.string().min(2, {
     message: "Title must be at least 2 characters.",
@@ -29,6 +32,7 @@ const FormSchema = z.object({
 });
 
 export default function CreatePost() {
+  const router = useRouter();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -38,14 +42,23 @@ export default function CreatePost() {
     },
   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    toast("You submitted the following values:", {
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
+  async function onSubmit(data: z.infer<typeof FormSchema>) {
+    try {
+      await SubmitPost(data);
+      toast.success("Success submitting post", {
+        classNames: {
+          icon: "text-green-500",
+        },
+      });
+      form.reset();
+      router.push("/posts");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+        return;
+      }
+      toast.error(String(error));
+    }
   }
 
   return (
@@ -58,11 +71,8 @@ export default function CreatePost() {
             <FormItem>
               <FormLabel>Title</FormLabel>
               <FormControl>
-                <Input placeholder="Budi" {...field} />
+                <Input placeholder="Your title post" {...field} />
               </FormControl>
-              {/* <FormDescription>
-                This is your public display name.
-              </FormDescription> */}
               <FormMessage className="text-xs" />
             </FormItem>
           )}
@@ -87,7 +97,12 @@ export default function CreatePost() {
           <Button variant={"outline"}>
             <Link href={"/posts"}>Back</Link>
           </Button>
-          <Button type="submit">Submit</Button>
+          <Button type="submit" disabled={form.formState.isSubmitting}>
+            {form.formState.isSubmitting && (
+              <span className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-current border-r-2"></span>
+            )}
+            Submit
+          </Button>
         </div>
       </form>
     </Form>
