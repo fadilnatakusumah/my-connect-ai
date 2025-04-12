@@ -64,7 +64,6 @@ export default function CreateUpdatePost({ post }: { post?: Post }) {
   }
 
   useEffect(() => {
-    console.log(post);
     if (post?.body || post?.title) {
       form.setValue("title", post.title);
       form.setValue("body", post.body);
