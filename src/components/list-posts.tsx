@@ -2,7 +2,7 @@
 
 import { Edit, Search, Trash } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -14,10 +14,17 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
-import { type Post } from "~/services/api-posts";
+import { ModalDialog } from "./modal-dialog";
 
-function ListPosts({ posts }: { posts: Post[] }) {
+import { toast } from "sonner";
+import { DeletePost, type Post } from "~/services/api-posts";
+import { usePostStore } from "~/store/post";
+
+function ListPosts({ posts: initialPosts }: { posts: Post[] }) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [isPending, startTransition] = useTransition();
+
+  const { posts, setPosts, selectedPost, selectPost } = usePostStore();
 
   const filteredPosts = searchTerm
     ? posts.filter(
@@ -26,6 +33,30 @@ function ListPosts({ posts }: { posts: Post[] }) {
           post.title.toLowerCase().includes(searchTerm.toLowerCase())
       )
     : posts;
+
+  useEffect(() => {
+    setPosts(initialPosts);
+  }, [initialPosts, setPosts]);
+
+  async function submitDeletePost() {
+    try {
+      startTransition(async () => {
+        await DeletePost(selectedPost!.id!);
+        toast.success("Success deleting post", {
+          classNames: {
+            icon: "text-green-500",
+          },
+        });
+        selectPost(null);
+      });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+        return;
+      }
+      toast.error(String(error));
+    }
+  }
 
   return (
     <div className="space-y-4 w-full">
@@ -68,7 +99,9 @@ function ListPosts({ posts }: { posts: Post[] }) {
                   <TableCell>
                     <Button
                       className="cursor-pointer text-red-700"
-                      onClick={() => {}}
+                      onClick={() => {
+                        selectPost(post);
+                      }}
                       variant="ghost"
                       size={"icon"}
                     >
@@ -94,6 +127,17 @@ function ListPosts({ posts }: { posts: Post[] }) {
             )}
           </TableBody>
         </Table>
+
+        <ModalDialog
+          open={!!selectedPost}
+          title="Delete Post"
+          saveTitle="Delete"
+          onSubmit={submitDeletePost}
+          onCancel={() => selectPost(null)}
+          isSubmitting={isPending}
+        >
+          <p>Are you sure you want to delete this post? #{selectedPost?.id}</p>
+        </ModalDialog>
       </div>
     </div>
   );

@@ -8,7 +8,7 @@ async function Posts() {
 
   return (
     <ContentWrapper title="Posts">
-      <ListPosts posts={posts} />;
+      <ListPosts posts={posts} />
     </ContentWrapper>
   );
 }
